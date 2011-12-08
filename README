@@ -51,3 +51,13 @@ Options:
   --reboot=REBOOT      Reboot an outlet
   --off=OFF            Turn off an outlet
   --on=ON              Turn on an outlet
+
+================================================================================
+Example session
+================================================================================
+$ ./apc.py 10.8.0.142 --reboot 8
+Acquiring lock /tmp/apc.lock
+Connecting to APC @ 10.8.0.142
+Logged in as user apc, version 3.7.3
+APC 10.8.0.142: Outlet #8 Rebooted
+DISCONNECTED from 10.8.0.142
