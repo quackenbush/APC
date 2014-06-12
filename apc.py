@@ -3,6 +3,7 @@
 APC Network PDU Controller
 
 Payton Quackenbush
+Modified by Sebastien Celles
 
 Tested with AP7900, but should work with similar models.
 '''
@@ -12,7 +13,7 @@ import sys
 import re
 import time
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 from lockfile import FilesystemLock
 
 APC_ESCAPE = "\033"
@@ -28,6 +29,7 @@ APC_VERSION_PATTERN = re.compile(" v(\d+\.\d+\.\d+)")
 
 APC_DEFAULT_USER = "apc"
 APC_DEFAULT_PASSWORD = "apc"
+APC_DEFAULT_HOST = "192.168.1.2"
 
 LOCK_PATH = "/tmp/apc.lock"
 LOCK_TIMEOUT = 60
@@ -199,57 +201,46 @@ class APC:
         self.child.close()
         self._unlock()
 
-def parse_options():
-    parser = OptionParser(usage = "%prog [OPTIONS] APC-IP")
-
-    parser.add_option("--verbose", action = "store_true",
-                      help = "Verbose messages")
-    parser.add_option("--quiet", action = "store_true",
-                      help = "Quiet")
-    parser.add_option("--user", action = "store", type = "string", default = APC_DEFAULT_USER,
-                      help = "Override the username")
-    parser.add_option("--password", action = "store", type = "string", default = APC_DEFAULT_PASSWORD,
-                      help = "Override the password")
-
-    parser.add_option("--debug", action = "store_true",
-                      help = "Debug mode")
-    parser.add_option("--reboot", action = "store", type = "string",
-                      help = "Reboot an outlet")
-    parser.add_option("--off", action = "store", type = "string",
-                      help = "Turn off an outlet")
-    parser.add_option("--on", action = "store", type = "string",
-                      help = "Turn on an outlet")
-
-    options, rest = parser.parse_args()
-
-    if len(rest) != 1:
-        parser.print_usage()
-        sys.exit(1)
-
-    options.host = rest[0]
-
-    return options
-
 def main():
-    options = parse_options()
+    parser = ArgumentParser(description='APC Python CLI')
+    parser.add_argument("--host", action = "store", default = APC_DEFAULT_HOST,
+        help = "Override the host")
+    parser.add_argument('--verbose', action='store',
+        help='Verbose messages')
+    parser.add_argument("--quiet", action = "store_true",
+        help = "Quiet")
+    parser.add_argument("--user", action = "store", default = APC_DEFAULT_USER,
+        help = "Override the username")
+    parser.add_argument("--password", action = "store", default = APC_DEFAULT_PASSWORD,
+        help = "Override the password")
+    parser.add_argument("--debug", action = "store_true",
+        help = "Debug mode")
+    parser.add_argument("--reboot", action = "store", 
+        help = "Reboot an outlet")
+    parser.add_argument("--off", action = "store", 
+        help = "Turn off an outlet")
+    parser.add_argument("--on", action = "store", 
+        help = "Turn on an outlet")
 
-    is_command_specified = (options.reboot or options.debug or options.on or options.off)
+    args = parser.parse_args()
+
+    is_command_specified = (args.reboot or args.debug or args.on or args.off)
 
     if not is_command_specified:
-        raise SystemExit("Must specify a command")
+        raise SystemExit("Must specify a command (--reboot N --on N or -off N)")
 
-    apc = APC(options.host, options.user, options.password, verbose = options.verbose, quiet = options.quiet)
+    apc = APC(args.host, args.user, args.password, verbose = args.verbose, quiet = args.quiet)
 
-    if options.debug:
+    if args.debug:
         apc.debug()
     else:
         try:
-            if options.reboot:
-                apc.reboot(options.reboot)
-            elif options.on:
-                apc.on(options.on)
-            elif options.off:
-                apc.off(options.off)
+            if args.reboot:
+                apc.reboot(args.reboot)
+            elif args.on:
+                apc.on(args.on)
+            elif args.off:
+                apc.off(args.off)
         except pexpect.TIMEOUT, e:
             raise SystemExit, "APC failed!  Pexpect result:\n%s" % e
         finally:
