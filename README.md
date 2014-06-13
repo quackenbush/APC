@@ -1,6 +1,5 @@
-===============================================================================
 APC Network Power Management Controller
-===============================================================================
+=======================================
 
 Payton Quackenbush
 
@@ -10,25 +9,23 @@ Tested with the AP7900, but likely works with other models.
 This handles locking of the device so that parallel calls will block, since
 APC has a single telnet session.
 
-================================================================================
 Requirements
-================================================================================
+------------
 
-Requires Python and the Python Expect (pexpect) library, and an APC with telnet
-network interface.
+- Python 2.x
+- Python Expect (pexpect) library
+- APC with telnet network interface (tested on AP7900)
 
-================================================================================
 Installation
-================================================================================
+------------
 
-No source installation required.
+No source installation required.  Just download and run.
 
 The APC needs to be set up with telnet enabled, and using a fixed IP address.
 If a DHCP address is used, it may change, and you will have trouble connecting.
 
-================================================================================
 Usage
-================================================================================
+-----
 
 # Power cycle (reboot) a single port
 $ ./apc.py IPADDRESS --user USER --password PASSWORD --reboot PORT
@@ -52,9 +49,8 @@ Options:
   --off=OFF            Turn off an outlet
   --on=ON              Turn on an outlet
 
-================================================================================
 Example session
-================================================================================
+---------------
 $ ./apc.py 10.8.0.142 --reboot 8
 Acquiring lock /tmp/apc.lock
 Connecting to APC @ 10.8.0.142
