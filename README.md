@@ -27,33 +27,43 @@ If a DHCP address is used, it may change, and you will have trouble connecting.
 Usage
 -----
 
-# Power cycle (reboot) a single port
-$ ./apc.py IPADDRESS --user USER --password PASSWORD --reboot PORT
+### Power cycle (reboot) a single port
+```$ ./apc.py --reboot PORT```
 
-# Example: reboot power port 1
-$ ./apc.py 1.2.3.4 --user apc --password apc --reboot 1
+### Example: reboot power port 1
+```$ ./apc.py --reboot 1```
 
-# Display help
+### Display help
+```
 $ ./apc.py --help
 
-Usage: apc.py [OPTIONS] APC-IP
+usage: apc.py [-h] [--host HOST] [-v] [--quiet] [--user USER]
+              [--password PASSWORD] [--debug] [--reboot REBOOT] [--off OFF]
+              [--on ON]
 
-Options:
+APC Python CLI
+
+optional arguments:
   -h, --help           show this help message and exit
-  --verbose            Verbose messages
+  --host HOST          Override the host
+  -v, --verbose        Verbose messages
   --quiet              Quiet
-  --user=USER          Override the username
-  --password=PASSWORD  Override the password
+  --user USER          Override the username
+  --password PASSWORD  Override the password
   --debug              Debug mode
-  --reboot=REBOOT      Reboot an outlet
-  --off=OFF            Turn off an outlet
-  --on=ON              Turn on an outlet
+  --reboot REBOOT      Reboot an outlet
+  --off OFF            Turn off an outlet
+  --on ON              Turn on an outlet
+```
 
 Example session
 ---------------
-$ ./apc.py 10.8.0.142 --reboot 8
+
+```
+$ ./apc.py --reboot 8
 Acquiring lock /tmp/apc.lock
 Connecting to APC @ 10.8.0.142
 Logged in as user apc, version 3.7.3
 APC 10.8.0.142: Outlet #8 Rebooted
 DISCONNECTED from 10.8.0.142
+```
