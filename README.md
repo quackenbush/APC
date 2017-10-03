@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.org/quackenbush/APC.svg?branch=master)](https://travis-ci.org/quackenbush/APC)
-
 APC Network Power Management Controller
 =======================================
 
 Payton Quackenbush
+
+[![Build Status](https://travis-ci.org/quackenbush/APC.svg?branch=master)](https://travis-ci.org/quackenbush/APC)
 
 Controls rebooting of APC network PDU switches with 'telnet' network interface.
 Tested with the AP7900, but likely works with other models.
