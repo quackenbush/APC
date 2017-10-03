@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/quackenbush/APC.svg?branch=master)](https://travis-ci.org/quackenbush/APC)
+
 APC Network Power Management Controller
 =======================================
 
