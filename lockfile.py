@@ -9,12 +9,10 @@ Filesystem-based interprocess mutex.
 
 __metaclass__ = type
 
-import errno, os
+import errno
+import os
 
 from time import time as _uniquefloat
-
-def unique():
-    return str(long(_uniquefloat() * 1000))
 
 from os import rename
 try:
@@ -38,7 +36,7 @@ except:
         def kill(pid, signal):
             try:
                 OpenProcess(0, 0, pid)
-            except pywintypes.error, e:
+            except pywintypes.error as e:
                 if e.args[0] == ERROR_ACCESS_DENIED:
                     return
                 elif e.args[0] == ERROR_INVALID_PARAMETER:
@@ -47,14 +45,17 @@ except:
             else:
                 raise RuntimeError("OpenProcess is required to fail.")
 
-    _open = file
+    _open = file  # noqa
+
+    def unique():
+        return str(long(_uniquefloat() * 1000))  # noqa
 
     # XXX Implement an atomic thingamajig for win32
     def symlink(value, filename):
         newlinkname = filename+"."+unique()+'.newlink'
-        newvalname = os.path.join(newlinkname,"symlink")
+        newvalname = os.path.join(newlinkname, "symlink")
         os.mkdir(newlinkname)
-        f = _open(newvalname,'wcb')
+        f = _open(newvalname, 'wcb')
         f.write(value)
         f.flush()
         f.close()
@@ -67,8 +68,8 @@ except:
 
     def readlink(filename):
         try:
-            fObj = _open(os.path.join(filename,'symlink'), 'rb')
-        except IOError, e:
+            fObj = _open(os.path.join(filename, 'symlink'), 'rb')
+        except IOError as e:
             if e.errno == errno.ENOENT or e.errno == errno.EIO:
                 raise OSError(e.errno, None)
             raise
@@ -80,7 +81,6 @@ except:
     def rmlink(filename):
         os.remove(os.path.join(filename, 'symlink'))
         os.rmdir(filename)
-
 
 
 class FilesystemLock:
@@ -108,7 +108,6 @@ class FilesystemLock:
     def __init__(self, name):
         self.name = name
 
-
     def lock(self):
         """
         Acquire this lock.
@@ -123,7 +122,7 @@ class FilesystemLock:
         while True:
             try:
                 symlink(str(os.getpid()), self.name)
-            except OSError, e:
+            except OSError as e:
                 if _windows and e.errno in (errno.EACCES, errno.EIO):
                     # The lock is in the middle of being deleted because we're
                     # on Windows where lock removal isn't atomic.  Give up, we
@@ -132,13 +131,13 @@ class FilesystemLock:
                 if e.errno == errno.EEXIST:
                     try:
                         pid = readlink(self.name)
-                    except OSError, e:
+                    except OSError as e:
                         if e.errno == errno.ENOENT:
                             # The lock has vanished, try to claim it in the
                             # next iteration through the loop.
                             continue
                         raise
-                    except IOError, e:
+                    except IOError as e:
                         if _windows and e.errno == errno.EACCES:
                             # The lock is in the middle of being
                             # deleted because we're on Windows where
@@ -150,13 +149,14 @@ class FilesystemLock:
                     try:
                         if kill is not None:
                             kill(int(pid), 0)
-                    except OSError, e:
+                    except OSError as e:
                         if e.errno == errno.ESRCH:
-                            # The owner has vanished, try to claim it in the next
+                            # The owner has vanished,
+                            # try to claim it in the next
                             # iteration through the loop.
                             try:
                                 rmlink(self.name)
-                            except OSError, e:
+                            except OSError as e:
                                 if e.errno == errno.ENOENT:
                                     # Another process cleaned up the lock.
                                     # Race them to acquire it in the next
@@ -172,7 +172,6 @@ class FilesystemLock:
             self.clean = clean
             return True
 
-
     def unlock(self):
         """
         Release this lock.
@@ -184,7 +183,7 @@ class FilesystemLock:
         """
         pid = readlink(self.name)
         if int(pid) != os.getpid():
-            raise ValueError("Lock %r not owned by this process" % (self.name,))
+            raise ValueError("Lock %r not owned by this process" % self.name)
         rmlink(self.name)
         self.locked = False
 
@@ -209,4 +208,3 @@ def isLocked(name):
 
 
 __all__ = ['FilesystemLock', 'isLocked']
-

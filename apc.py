@@ -9,7 +9,6 @@ Tested with AP7900, but should work with similar models.
 '''
 
 import pexpect
-import sys
 import re
 import time
 
@@ -19,8 +18,8 @@ from lockfile import FilesystemLock
 APC_ESCAPE = '\033'
 
 APC_IMMEDIATE_REBOOT = ['4', '3']
-APC_IMMEDIATE_ON     = ['1', '1']
-APC_IMMEDIATE_OFF    = ['3', '2']
+APC_IMMEDIATE_ON = ['1', '1']
+APC_IMMEDIATE_OFF = ['3', '2']
 
 APC_YES = 'YES'
 APC_LOGOUT = '4'
@@ -34,6 +33,7 @@ APC_DEFAULT_HOST = '192.168.1.2'
 LOCK_PATH = '/tmp/apc.lock'
 LOCK_TIMEOUT = 60
 
+
 class APC:
     def __init__(self, options):
         self.host = options.host
@@ -45,15 +45,15 @@ class APC:
 
     def info(self, msg):
         if not self.quiet:
-            print msg
+            print(msg)
 
     def notify(self, outlet_name, state):
-        print 'APC %s: %s %s' % (self.host, outlet_name, state)
+        print('APC %s: %s %s' % (self.host, outlet_name, state))
 
     def sendnl(self, a):
         self.child.send(a + '\r\n')
         if self.verbose:
-            print self.child.before
+            print(self.child.before)
 
     def _lock(self):
         self.info('Acquiring lock %s' % (LOCK_PATH))
@@ -92,12 +92,13 @@ class APC:
         match = APC_VERSION_PATTERN.search(header)
 
         if not match:
-            raise Exception, 'Could not parse APC version'
+            raise Exception('Could not parse APC version')
 
         self.version = match.group(1)
         self.is_new_version = (self.version[0] == '3')
 
-        self.info('Logged in as user %s, version %s' % (self.user, self.version))
+        self.info('Logged in as user %s, version %s'
+                  % (self.user, self.version))
 
     def get_outlet(self, outlet):
         if str(outlet) in ['*', '+', '9']:
@@ -188,39 +189,41 @@ class APC:
         self.child.interact()
 
     def disconnect(self):
-        #self._escape_to_main()
+        # self._escape_to_main()
 
         self.sendnl(APC_LOGOUT)
         self.child.sendeof()
         if not self.quiet:
-            print 'DISCONNECTED from %s' % self.host
+            print('DISCONNECTED from %s' % self.host)
 
         if self.verbose:
-            print '[%s]' % ''.join(self.child.readlines())
+            print('[%s]' % ''.join(self.child.readlines()))
 
         self.child.close()
         self._unlock()
 
+
 def main():
     parser = ArgumentParser(description='APC Python CLI')
-    parser.add_argument('--host', action = 'store', default = APC_DEFAULT_HOST,
-        help = 'Override the host')
+    parser.add_argument('--host', action='store', default=APC_DEFAULT_HOST,
+                        help='Override the host')
     parser.add_argument('-v', '--verbose', action='store_true',
-        help='Verbose messages')
-    parser.add_argument('--quiet', action = 'store_true',
-        help = 'Quiet')
-    parser.add_argument('--user', action = 'store', default = APC_DEFAULT_USER,
-        help = 'Override the username')
-    parser.add_argument('--password', action = 'store', default = APC_DEFAULT_PASSWORD,
-        help = 'Override the password')
-    parser.add_argument('--debug', action = 'store_true',
-        help = 'Debug mode')
-    parser.add_argument('--reboot', action = 'store',
-        help = 'Reboot an outlet')
-    parser.add_argument('--off', action = 'store',
-        help = 'Turn off an outlet')
-    parser.add_argument('--on', action = 'store',
-        help = 'Turn on an outlet')
+                        help='Verbose messages')
+    parser.add_argument('--quiet', action='store_true',
+                        help='Quiet')
+    parser.add_argument('--user', action='store', default=APC_DEFAULT_USER,
+                        help='Override the username')
+    parser.add_argument('--password', action='store',
+                        default=APC_DEFAULT_PASSWORD,
+                        help='Override the password')
+    parser.add_argument('--debug', action='store_true',
+                        help='Debug mode')
+    parser.add_argument('--reboot', action='store',
+                        help='Reboot an outlet')
+    parser.add_argument('--off', action='store',
+                        help='Turn off an outlet')
+    parser.add_argument('--on', action='store',
+                        help='Turn on an outlet')
 
     args = parser.parse_args()
 
@@ -232,8 +235,8 @@ def main():
 
     try:
         apc = APC(args)
-    except pexpect.TIMEOUT, e:
-        raise SystemExit, 'ERROR: Timeout connecting to APC'
+    except pexpect.TIMEOUT as e:
+        raise SystemExit('ERROR: Timeout connecting to APC')
 
     if args.debug:
         apc.debug()
@@ -245,10 +248,11 @@ def main():
                 apc.on(args.on)
             elif args.off:
                 apc.off(args.off)
-        except pexpect.TIMEOUT, e:
-            raise SystemExit, 'APC failed!  Pexpect result:\n%s' % e
+        except pexpect.TIMEOUT as e:
+            raise SystemExit('APC failed!  Pexpect result:\n%s' % e)
         finally:
             apc.disconnect()
+
 
 if __name__ == '__main__':
     main()
