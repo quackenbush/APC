@@ -52,7 +52,7 @@ except:
 
     # XXX Implement an atomic thingamajig for win32
     def symlink(value, filename):
-        newlinkname = filename+"."+unique()+'.newlink'
+        newlinkname = filename + "." + unique() + '.newlink'
         newvalname = os.path.join(newlinkname, "symlink")
         os.mkdir(newlinkname)
         f = _open(newvalname, 'wcb')
