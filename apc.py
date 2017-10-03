@@ -9,6 +9,7 @@ Tested with AP7900, but should work with similar models.
 '''
 
 import pexpect
+import os
 import re
 import time
 
@@ -18,21 +19,20 @@ from lockfile import FilesystemLock
 APC_ESCAPE = '\033'
 
 APC_IMMEDIATE_REBOOT = ['4', '3']
-APC_IMMEDIATE_ON = ['1', '1']
-APC_IMMEDIATE_OFF = ['3', '2']
+APC_IMMEDIATE_ON     = ['1', '1']
+APC_IMMEDIATE_OFF    = ['3', '2']
 
-APC_YES = 'YES'
+APC_YES    = 'YES'
 APC_LOGOUT = '4'
 
 APC_VERSION_PATTERN = re.compile(' v(\d+\.\d+\.\d+)')
 
-APC_DEFAULT_USER = 'apc'
-APC_DEFAULT_PASSWORD = 'apc'
-APC_DEFAULT_HOST = '192.168.1.2'
+APC_DEFAULT_HOST     = os.environ.get('APC_HOST',     '192.168.1.2')
+APC_DEFAULT_USER     = os.environ.get('APC_USER',     'apc')
+APC_DEFAULT_PASSWORD = os.environ.get('APC_PASSWORD', 'apc')
 
 LOCK_PATH = '/tmp/apc.lock'
 LOCK_TIMEOUT = 60
-
 
 class APC:
     def __init__(self, options):
@@ -207,15 +207,15 @@ def main():
     parser = ArgumentParser(description='APC Python CLI')
     parser.add_argument('--host', action='store', default=APC_DEFAULT_HOST,
                         help='Override the host')
+    parser.add_argument('--user', action='store', default=APC_DEFAULT_USER,
+                        help='Override the username')
+    parser.add_argument('--password', action='store', default=APC_DEFAULT_PASSWORD,
+                        help='Override the password')
+
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='Verbose messages')
     parser.add_argument('--quiet', action='store_true',
                         help='Quiet')
-    parser.add_argument('--user', action='store', default=APC_DEFAULT_USER,
-                        help='Override the username')
-    parser.add_argument('--password', action='store',
-                        default=APC_DEFAULT_PASSWORD,
-                        help='Override the password')
     parser.add_argument('--debug', action='store_true',
                         help='Debug mode')
     parser.add_argument('--reboot', action='store',

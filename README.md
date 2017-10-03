@@ -12,8 +12,8 @@ APC has a single telnet session.
 Requirements
 ------------
 
-- Python 2.x
-- Python Expect (pexpect) library
+- Python 2.x or Python 3.x
+- Python Expect (pexpect) library.  To install: 'pip install pexpect'
 - APC with telnet network interface (tested on AP7900)
 
 Installation
@@ -46,15 +46,23 @@ APC Python CLI
 optional arguments:
   -h, --help           show this help message and exit
   --host HOST          Override the host
-  -v, --verbose        Verbose messages
-  --quiet              Quiet
   --user USER          Override the username
   --password PASSWORD  Override the password
+  -v, --verbose        Verbose messages
+  --quiet              Quiet
   --debug              Debug mode
   --reboot REBOOT      Reboot an outlet
   --off OFF            Turn off an outlet
   --on ON              Turn on an outlet
 ```
+
+Environment Variables
+---------------------
+
+The following environment variables will override the APC connection:
+- $APC_HOST
+- $APC_USER
+- $APC_PASSWORD
 
 Example session
 ---------------
