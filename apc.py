@@ -89,7 +89,7 @@ class APC:
 
         header = self.child.before
 
-        match = APC_VERSION_PATTERN.search(header)
+        match = APC_VERSION_PATTERN.search(str(header))
 
         if not match:
             raise Exception('Could not parse APC version')
