@@ -3,6 +3,16 @@ APC Network Power Management Controller
 
 Payton Quackenbush
 
+---
+
+**NOTE**: as of 2017, this project has been [replaced by Sebastien Celles' APC](https://github.com/scls19fr/APC).  
+
+Please see the _NEW_ version of the Python APC project here:  
+- https://github.com/scls19fr/APC
+- This contains outlet status, better Python integration, and other improvements.
+
+---
+
 [![Build Status](https://travis-ci.org/quackenbush/APC.svg?branch=master)](https://travis-ci.org/quackenbush/APC)
 
 Controls rebooting of APC network PDU switches with 'telnet' network interface.
